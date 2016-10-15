@@ -321,4 +321,4 @@ extractor.extract('data/user_tag_query.top.TRAIN.splitword', \
 '''
 
 clf = Classifier()
-clf.classify('data/train_dataset_list', 'data/test_dataset_list', 'data/labels_pred', mode='test')
+clf.classify('data/train_dataset_list', 'data/test_dataset_list', 'data/labels_pred', mode='train')
