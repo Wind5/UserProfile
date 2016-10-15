@@ -5,6 +5,10 @@ from pyltp import Segmentor, Postagger
 from sklearn.cross_validation  import train_test_split
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
+from code.analysis.entropy import Analysis
+from code.extractor.bow import Extractor
+from code.classification.decision_tree import Classifier
+
 
 
 def import_data(path, mode='train'):
@@ -94,6 +98,17 @@ def import_dataset_list(path, mode='train'):
         return datas, age_labels, gender_labels, education_labels
     elif mode == 'test_test' :
         return datas
+    
+    
+def import_word_dict(path):
+    word2index, index2word = dict(), dict()
+    with codecs.open(path, 'r', 'gb18030') as fo:
+        for line in fo.readlines():
+            [word, times, idx] = line.strip().split('\t')
+            word2index[word] = int(idx)
+            index2word[int(idx)] = word
+    
+    return word2index, index2word
 
 
 def ltp_labeling(info_list, path, mode='train'):
@@ -202,7 +217,7 @@ def classification(datas_train, datas_test, age_labels_train, age_labels_test):
     acc = 1.0 * sum([1 for idx in range(age_labels_test.shape[0]) \
                      if age_labels_pred[idx] == age_labels_test[idx]]) / age_labels_test.shape[0]
     print acc
-    return acc
+    return age_labels_pred, acc
 
 
 def train_model(datas_train, age_labels_train):
@@ -265,13 +280,15 @@ write_word_list(word_list, 'data/word_dict')
 '''
 (datas_train, datas_test), (age_labels_train, age_labels_test), \
     (gender_labels_train, gender_labels_test), (education_labels_train, education_labels_test) = \
-    import_dataset_list('data/train_dataset_list', mode='test')
-age_acc = classification(datas_train, datas_test, age_labels_train, age_labels_test)
-gender_acc = classification(datas_train, datas_test, gender_labels_train, gender_labels_test)
-education_acc = classification(datas_train, datas_test, education_labels_train, education_labels_test)
+    import_dataset_list('data/train_dataset_list', mode='train')
+age_labels_pred, age_acc = classification(datas_train, datas_test, age_labels_train, age_labels_test)
+gender_labels_pred, gender_acc = classification(datas_train, datas_test, gender_labels_train, gender_labels_test)
+education_labels_pred, education_acc = classification(datas_train, datas_test, education_labels_train, education_labels_test)
+write_labels_pred(age_labels_pred, gender_labels_pred, education_labels_pred, 'data/labels_pred')
 print (age_acc + gender_acc + education_acc) / 3
 '''
 
+'''
 train_datas, age_labels, gender_labels, education_labels = \
     import_dataset_list('data/train_dataset_list', mode='test_train')
 test_datas = import_dataset_list('data/test_dataset_list', mode='test_test')
@@ -288,3 +305,20 @@ education_labels_pred = predict_model(education_model, test_datas)
 print 'finish predicting ...'
 write_labels_pred(age_labels_pred, gender_labels_pred, education_labels_pred, 'data/labels_pred')
 print 'finish write labels_pred ...'
+'''
+
+'''
+analysis = Analysis()
+word2index, index2word = import_word_dict('data/word_dict')
+analysis.analyze('data/train_dataset_list', index2word)
+'''
+
+'''
+extractor = Extractor()
+extractor.extract('data/user_tag_query.top.TRAIN.splitword', \
+                  'data/user_tag_query.top.TEST.splitword', 'data/word_dict', \
+                  'data/train_dataset_list', 'data/test_dataset_list')
+'''
+
+clf = Classifier()
+clf.classify('data/train_dataset_list', 'data/test_dataset_list', 'data/labels_pred', mode='test')
