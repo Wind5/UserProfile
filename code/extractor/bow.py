@@ -43,12 +43,11 @@ class Extractor:
     
     
     def import_word_dict(self, path):
-        idx = 0
         with codecs.open(path, 'r', 'gb18030') as fo:
             for line in fo.readlines():
-                [word, _, _] = line.strip().split('\t')
+                [word, times, idx] = line.strip().split('\t')
                 if word not in self.word2index:
-                    self.word2index[word] = idx
+                    self.word2index[word] = [times, idx]
                     self.index2word[idx] = word
                     idx += 1
     
@@ -74,8 +73,9 @@ class Extractor:
                         if word_name not in word_dict:
                             word_dict[word_name] = 0
                         word_dict[word_name] += 1
-        word_list = sorted(word_dict.iteritems(), key=lambda x: x[1], reverse=True)[0:2000]
-        word2index = dict([(word, idx) for idx, word in enumerate([t[0] for t in word_list])])
+        word_list = sorted(word_dict.iteritems(), key=lambda x: x[1], reverse=True)[0:5000]
+        self.word2index = dict([(word[0], [word[1], idx]) for idx, word in enumerate([t[0] for t in word_list])])
+        self.index2word = dict([(idx, word) for idx, word in enumerate([t[0] for t in word_list])])
 
 
     def construct_dataset(self, train_info_list, test_info_list):
@@ -90,7 +90,7 @@ class Extractor:
                 for word, pos in query:
                     word_name = word + '<:>' + pos
                     if word_name in self.word2index:
-                        vector[self.word2index[word_name]] += 1
+                        vector[self.word2index[word_name][1]] += 1
             self.train_dataset_list.append((user, age, gender, education, vector))
             sparse_rate += 1.0 * sum([1 for t in vector if t != 0]) / len(self.word2index)
         sparse_rate = 1.0 * sparse_rate / len(train_info_list)
@@ -103,7 +103,7 @@ class Extractor:
                 for word, pos in query:
                     word_name = word + '<:>' + pos
                     if word_name in self.word2index:
-                        vector[self.word2index[word_name]] += 1
+                        vector[self.word2index[word_name][1]] += 1
             self.test_dataset_list.append((user, vector))
             sparse_rate += 1.0 * sum([1 for t in vector if t != 0]) / len(self.word2index)
         sparse_rate = 1.0 * sparse_rate / len(test_info_list)
@@ -120,14 +120,25 @@ class Extractor:
                 elif mode == 'test':
                     user, vector = info
                     fw.writelines((user + '\t' + ' '.join([str(t) for t in vector]) + '\n').encode('gb18030'))
+
+
+    def write_word_list(self, path):
+        with open(path, 'w') as fw:
+            for word in self.word2index:
+                fw.writelines((word + '\t' + str(self.word2index[word][0]) + '\t' \
+                               + str(self.word2index[word][0]) + '\n').encode('gb18030'))
                     
     
     def extract(self, train_info_path, test_info_path, word_path, \
-                train_dataset_path, test_dataset_path):
-        self.import_word_dict(word_path)
-        print len(self.word2index), len(self.index2word)
+                train_dataset_path, test_dataset_path, word_dict_existed=False):
         train_info_list = self.import_info_list(train_info_path, mode='train')
         test_info_list = self.import_info_list(test_info_path, mode='test')
+        if word_dict_existed:
+            self.import_word_dict(word_path)
+        else:
+            self.construct_word_dict(train_info_list, test_info_list)
+            self.write_word_list(word_path)
+        print len(self.word2index), len(self.index2word)
         self.construct_dataset(train_info_list, test_info_list)
         self.write_dataset_list(self.train_dataset_list, train_dataset_path, mode='train')
         self.write_dataset_list(self.test_dataset_list, test_dataset_path, mode='test')
