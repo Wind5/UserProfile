@@ -1,7 +1,7 @@
 # -*- encoding=gb18030 -*-
 import codecs
 import numpy
-from pyltp import Segmentor, Postagger
+# from pyltp import Segmentor, Postagger
 
 
 
@@ -11,7 +11,7 @@ def import_data(path, mode='train'):
     """
     info_list = list()
     with codecs.open(path, 'r', 'gb18030') as fo:
-        for line in fo.readlines()[0:10]:
+        for line in fo.readlines():
             infos = line.strip().split('\t')
             if mode == 'train' :
                 [user, age, gender, education], querys = infos[0:4], infos[4:]
@@ -75,17 +75,17 @@ def construct_zi_dict(train_info_list, test_info_list):
                     zi_dict[zi] = 0
                 zi_dict[zi] += 1
     zi_list = sorted(zi_dict.iteritems(), key=lambda x: x[1], reverse=True)
-    print zi_list
-    zi2index = dict([(zi[0], [zi[1], idx]) for idx, zi in enumerate([t[0] for t in zi_list])])
+    zi2index = dict([(zi[0], [zi[1], idx]) for idx, zi in enumerate(zi_list)])
+    index2zi = dict([(idx, [zi[0], zi[1]]) for idx, zi in enumerate(zi_list)])
     
-    return zi2index
+    return zi2index, index2zi
 
 
-def write_word_list(zi2index, path):
+def write_word_list(index2zi, path):
     with open(path, 'w') as fw:
-        for zi in zi2index:
-            fw.writelines((zi + '\t' + str(zi2index[zi][0]) + '\t' \
-                           + str(zi2index[zi][0]) + '\n').encode('gb18030'))
+        for idx in index2zi:
+            fw.writelines((index2zi[idx][0] + '\t' + str(index2zi[idx][1]) + '\t' \
+                           + str(idx) + '\n').encode('gb18030'))
                 
                 
 def main():
@@ -97,9 +97,9 @@ def main():
     print 'finish importing test_info_list ...'
     zi_spliting(test_info_list, 'E://Github/CCF_Competition/data/user_tag_query.2W.TEST.splitzi', mode='test')
     print 'finish spliting zis in test_info_list ...'
-    zi2index = construct_zi_dict(train_info_list, test_info_list)
+    zi2index, index2zi = construct_zi_dict(train_info_list, test_info_list)
     print 'finish construct zi_dict in test_info_list ...'
-    write_word_list(zi2index, 'E://Github/CCF_Competition/data/word_dict')
+    write_word_list(index2zi, 'E://Github/CCF_Competition/data/word_dict')
     
 
     
