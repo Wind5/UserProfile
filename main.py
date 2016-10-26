@@ -8,7 +8,7 @@ from sklearn.cross_validation  import train_test_split
 from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
 from code.analysis.entropy import Analysis
-from code.extractor.sequence import Extractor
+from code.extractor.tfidf import Extractor
 from code.classification.decision_tree import Classifier
 
 
@@ -34,16 +34,19 @@ if __name__ == '__main__':
     # mode selection
     if mode == 'extract':
         extractor = Extractor()
-        extractor.extract('data/user_tag_query.2W.TRAIN.splitzi', \
-                          'data/user_tag_query.2W.TEST.splitzi', 'data/zi_dict', \
-                          'data/train_dataset_list', 'data/test_dataset_list')
+        extractor.extract(os.path.join(dataset_folder, 'user_tag_query.2W.TRAIN.splitword') , \
+                          os.path.join(dataset_folder, 'user_tag_query.2W.TEST.splitword'), \
+                          os.path.join(dataset_folder, 'word_dict.txt'), \
+                          os.path.join(dataset_folder, 'train_dataset_list'), \
+                          os.path.join(dataset_folder, 'test_dataset_list'))
     elif mode == 'analyze':
         analysis = Analysis()
         word2index, index2word = import_word_dict('data/word_dict')
         analysis.analyze('data/train_dataset_list', index2word)
     elif mode == 'classify':
         clf = Classifier()
-        clf.classify('data/train_dataset_list', 'data/test_dataset_list', \
-                     'data/labels_pred', mode='test')    
+        clf.classify(os.path.join(dataset_folder, 'train_dataset_list'), \
+                     os.path.join(dataset_folder, 'test_dataset_list'), \
+                     os.path.join(dataset_folder, 'pred_labels'), mode='train')    
     elif mode == 'deeptrain':
         manager.train()

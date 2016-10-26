@@ -1,6 +1,7 @@
 # -*- encoding=gb18030 -*-
 import codecs
 import numpy
+import math
 
 
 
@@ -76,6 +77,28 @@ class Extractor:
         word_list = sorted(word_dict.iteritems(), key=lambda x: x[1], reverse=True)[0:5000]
         self.word2index = dict([(word[0], [word[1], idx]) for idx, word in enumerate(word_list)])
         self.index2word = dict([(idx, [word[0], word[1]]) for idx, word in enumerate(word_list)])
+        
+    
+    def calculate_idf(self, info_list, mode='train'):
+        for info in info_list:
+            if mode == 'train':
+                [user, age, gender, education, querys] = info
+            else:
+                [user, querys] = info
+            idf_vector = [0]*len(self.word2index)
+            word_list = list()
+            for query in querys:
+                for word, pos in query:
+                    word_name = word + '<:>' + pos
+                    if word_name in self.word2index:
+                        word_list.append(word + '<:>' + pos)
+            for word_name in set(word_list):
+                idf_vector[self.word2index[word_name][1]] += 1
+            for idx in range(len(idf_vector)):
+                idf_vector[idx] = math.log(1.0 * len(info_list) / (idf_vector[idx]+1))
+        
+        return idf_vector
+                    
 
 
     def construct_dataset(self, train_info_list, test_info_list):
@@ -83,7 +106,10 @@ class Extractor:
         Filter the word dict.
         Construct BOW dataset.
         """
+        # construct train_dataset_list
+        idf_vector = self.calculate_idf(train_info_list, mode='train')
         sparse_rate = 0.0
+        vectors = list()
         for user, age, gender, education, querys in train_info_list:
             vector = [0] * len(self.word2index)
             for query in querys :
@@ -91,12 +117,20 @@ class Extractor:
                     word_name = word + '<:>' + pos
                     if word_name in self.word2index:
                         vector[self.word2index[word_name][1]] += 1
-            self.train_dataset_list.append((user, age, gender, education, vector))
             sparse_rate += 1.0 * sum([1 for t in vector if t != 0]) / len(self.word2index)
+            vectors.append(vector)
+        for idx, info in enumerate(train_info_list):
+            new_vector = [0]*len(self.word2index)
+            for word in range(len(vectors[idx])):
+                word_sum = sum([vector[word] for vector in vectors]) + 1
+                new_vector[word] = 1.0 * vectors[idx][word] * idf_vector[word] / word_sum 
+            self.train_dataset_list.append((user, age, gender, education, new_vector))
         sparse_rate = 1.0 * sparse_rate / len(train_info_list)
         print 'training set sparse rate is', sparse_rate
         # construct test_dataset_list
+        idf_vector = self.calculate_idf(test_info_list, mode='test')
         sparse_rate = 0.0
+        vectors = list()
         for user, querys in test_info_list:
             vector = [0] * len(self.word2index)
             for query in querys :
@@ -104,10 +138,16 @@ class Extractor:
                     word_name = word + '<:>' + pos
                     if word_name in self.word2index:
                         vector[self.word2index[word_name][1]] += 1
-            self.test_dataset_list.append((user, vector))
             sparse_rate += 1.0 * sum([1 for t in vector if t != 0]) / len(self.word2index)
+            vectors.append(vector)
+        for idx, info in enumerate(test_info_list):
+            new_vector = [0]*len(self.word2index)
+            for word in range(len(vectors[idx])):
+                word_sum = sum([vector[word] for vector in vectors]) + 1
+                new_vector[word] = 1.0 * vectors[idx][word] * idf_vector[word] / word_sum 
+            self.test_dataset_list.append((user, new_vector))
         sparse_rate = 1.0 * sparse_rate / len(test_info_list)
-        print 'testing set sparse rate is', sparse_rate
+        print 'training set sparse rate is', sparse_rate
 
 
     def write_dataset_list(self, dataset_list, path, mode='train'):
