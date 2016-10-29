@@ -46,9 +46,9 @@ class Classifier:
                     age_datas.append(vector)
                     gender_datas.append(vector)
                     education_datas.append(vector)
-        age_datas = numpy.array(age_datas, dtype=int)
-        gender_datas = numpy.array(gender_datas, dtype=int)
-        education_datas = numpy.array(education_datas, dtype=int)
+        age_datas = numpy.array(age_datas, dtype=float)
+        gender_datas = numpy.array(gender_datas, dtype=float)
+        education_datas = numpy.array(education_datas, dtype=float)
         print 'number of age_datas samples is', age_datas.shape[0]
         print 'number of gender_datas samples is', gender_datas.shape[0]
         print 'number of education_datas samples is', education_datas.shape[0]
