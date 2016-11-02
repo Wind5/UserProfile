@@ -54,6 +54,6 @@ if __name__ == '__main__':
     elif mode == 'analyze':
         analysis = Analysis()
         analysis.analyze(os.path.join(dataset_folder1, 'user_tag_query.2W.TRAIN.splitword') , \
-                         os.path.join(dataset_folder1, 'user_tag_query.2W.TEST.splitword'))    
+                         os.path.join(dataset_folder1, 'user_tag_query.2W.TEST.splitword'))
     elif mode == 'deeptrain':
         manager.train()
