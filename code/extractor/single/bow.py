@@ -114,7 +114,7 @@ class Extractor:
         else:
             worddict = WordDict()
             self.word2index, self.index2word = \
-                worddict.entropy_single_construct(train_info_list, test_info_list)
+                worddict.entropy_single_construct(train_info_list, test_info_list, size=10000)
             self.write_word_list(word_path)
         print len(self.word2index), len(self.index2word)
         self.construct_dataset(train_info_list, test_info_list)

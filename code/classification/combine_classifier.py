@@ -26,8 +26,9 @@ class Classifier:
         age_datas, age_labels = list(), list()
         gender_datas, gender_labels = list(), list()
         education_datas, education_labels = list(), list()
+        idx = 0
         with codecs.open(path, 'r', 'gb18030') as fo:
-            for line in fo.readlines()[0:100]:
+            for line in fo.readlines():
                 if mode == 'train':
                     [user, age, gender, education, vector] = line.strip().split('\t')
                     vector = vector.split(' ')
@@ -138,6 +139,14 @@ class CombineClassifier:
         acc = acc / age_labels_prob1.shape[0]
         # print acc
         return labels_pred, acc
+                
+                
+    def write_labels_pred(self, age_labels_pred, gender_labels_pred, education_labels_pred, path):
+        with open(path, 'w') as fw:
+            for idx in range(len(age_labels_pred)):
+                fw.writelines((str(age_labels_pred[idx]) + ' ' + \
+                               str(gender_labels_pred[idx]) + ' ' + \
+                               str(education_labels_pred[idx]) + '\n').encode('gb18030'))
         
                 
     def classify(self, train_dataset_path1, test_dataset_path1, \
@@ -192,7 +201,7 @@ class CombineClassifier:
             education_labels_pred1, education_labels_prob1 = classifier1.predict_model(education_model1, classifier1.test_education_datas)
             education_model2 = classifier2.train_model(classifier2.train_education_datas, classifier2.train_education_labels)
             print 'finish train education_model2 ...'
-            education_labels_pred2, education_labels_prob2 = classifier2.predict_model(education_model1, classifier2.test_education_datas)
+            education_labels_pred2, education_labels_prob2 = classifier2.predict_model(education_model2, classifier2.test_education_datas)
             
             age_labels_pred, _ = self.combination(age_labels_prob1, age_labels_prob2, mode='test')
             gender_labels_pred, _ = self.combination(gender_labels_prob1, gender_labels_prob2, mode='test')

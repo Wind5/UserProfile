@@ -81,7 +81,7 @@ class WordDict:
             word_list = list()
             for query in querys:
                 for word, pos in query:
-                    if pos in ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'j']:
+                    if pos in ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'v', 'ws', 'j']:
                         word_name = word + '<:>' + pos
                         word_list.append(word_name)
             for word_name in set(word_list):

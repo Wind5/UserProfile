@@ -1,7 +1,7 @@
 # -*- encoding=gb18030 -*-
 import codecs
 import numpy
-import lda
+# import lda
 
 from code.extractor.word_dict.construct_word_dict import WordDict
 
