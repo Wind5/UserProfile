@@ -8,9 +8,10 @@ from code.extractor.word_dict.construct_word_dict import WordDict
 
 class Extractor:
     
-    def __init__(self):
+    def __init__(self, param_dict):
         self.word2index, self.index2word = dict(), dict()
         self.train_dataset_list, self.test_dataset_list = list(), list()
+        self.param_dict = param_dict
 
 
     def import_info_list(self, path, mode='train'):
@@ -114,9 +115,10 @@ class Extractor:
         else:
             worddict = WordDict()
             self.word2index, self.index2word = \
-                worddict.entropy_single_construct(train_info_list, test_info_list, size=10000)
+                worddict.entropy_single_construct(train_info_list, test_info_list, \
+                                                  size=self.param_dict['n_words'])
             self.write_word_list(word_path)
-        print len(self.word2index), len(self.index2word)
+        print 'size of word_dict is ', len(self.word2index)
         self.construct_dataset(train_info_list, test_info_list)
         self.write_dataset_list(self.train_dataset_list, train_dataset_path, mode='train')
         self.write_dataset_list(self.test_dataset_list, test_dataset_path, mode='test')

@@ -1,0 +1,71 @@
+1.1 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is freq, size is 5000.
+    training set sparse rate is 0.0269778
+	testing set sparse rate is 0.02683673
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.523288368542.
+	
+1.2 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is freq, size is 7500.
+    training set sparse rate is 0.0196742933333
+	testing set sparse rate is 0.0195515
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.520743191652.
+	
+1.2 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is freq, size is 10000.
+    training set sparse rate is 0.01559305
+    testing set sparse rate is 0.015483965
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.520488673963.
+
+2.1 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is entropy+10000*freq, size is 5000.
+    training set sparse rate is 0.02696466
+    testing set sparse rate is 0.02682906
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.518452532451.
+
+2.2 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is entropy+10000*freq, size is 7500.
+	training set sparse rate is 0.01964844
+	testing set sparse rate is 0.01953083
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.522015780097.
+
+2.3 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is entropy+10000*freq, size is 10000.
+    training set sparse rate is 0.015145105
+    testing set sparse rate is 0.01504285
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.525069992364.
+
+3.1 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is entropy*freq, size is 5000.
+    training set sparse rate is 0.02673661
+	testing set sparse rate is 0.0266212
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.526597098498.
+
+3.2 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is entropy*freq, size is 7500.
+	training set sparse rate is 0.01949604
+	testing set sparse rate is 0.0193888866667
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.519216085518.
+
+3.3 bag of words with ['n', 'nh', 'ni', 'nl', 'ns', 'nz', 'ws', 'v', 'j'], 
+    use entropy to filter words, score is entropy*freq, size is 10000.
+    training set sparse rate is 0.01546557
+	testing set sparse rate is 0.015370315
+    classifier is RandomForest, n_estimators is 200.
+    dataset is AGE, size is 19645.
+    accurancy is 0.516670908628.

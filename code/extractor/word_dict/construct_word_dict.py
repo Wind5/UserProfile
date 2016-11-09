@@ -91,7 +91,6 @@ class WordDict:
                 if word_name not in freqency_dict:
                     freqency_dict[word_name] = 0
                 freqency_dict[word_name] += 1
-        print 'finish statistic ...'
         for word_name in entropy_dict:
             etp = entropy([1.0/n_labels]*n_labels) - entropy(entropy_dict[word_name])
             freq = 1.0 * freqency_dict[word_name] / len(freqency_dict)
